@@ -5,7 +5,7 @@ import { storage } from "./storage";
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 const BASE_URL = process.env.REPL_ID 
-  ? `https://${process.env.REPL_ID}.replit.app`
+  ? `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`
   : 'http://localhost:5000';
 
 // In-memory session store (replace with Redis/DB for production)
