@@ -5,24 +5,6 @@ import { storage } from "./storage";
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 
-// Detect the correct base URL based on environment
-let BASE_URL = 'http://localhost:5000';
-
-// Check multiple Replit environment variables
-if (process.env.REPLIT_DEV_DOMAIN) {
-  BASE_URL = `https://${process.env.REPLIT_DEV_DOMAIN}`;
-} else if (process.env.REPL_SLUG && process.env.REPL_OWNER) {
-  BASE_URL = `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`;
-}
-
-// Log the detected URL for debugging
-console.log('Detected BASE_URL:', BASE_URL);
-console.log('Available env vars:', {
-  REPLIT_DEV_DOMAIN: process.env.REPLIT_DEV_DOMAIN,
-  REPL_SLUG: process.env.REPL_SLUG,
-  REPL_OWNER: process.env.REPL_OWNER
-});
-
 // In-memory session store (replace with Redis/DB for production)
 const sessions = new Map<string, {
   username: string;
@@ -40,6 +22,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
            Math.random().toString(36).substring(2, 15);
   }
 
+  // Get base URL from request headers (works on any platform)
+  function getBaseUrl(req: any): string {
+    const protocol = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
+    const host = req.headers['x-forwarded-host'] || req.headers.host;
+    return `${protocol}://${host}`;
+  }
+
   // Initiate GitHub OAuth
   app.get("/api/auth/github", (req, res) => {
     const state = generateState();
@@ -53,7 +42,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     });
 
-    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(BASE_URL + '/api/auth/github/callback')}&state=${state}&scope=public_repo`;
+    const baseUrl = getBaseUrl(req);
+    const callbackUrl = `${baseUrl}/api/auth/github/callback`;
+    console.log('OAuth initiated with callback URL:', callbackUrl);
+    
+    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(callbackUrl)}&state=${state}&scope=public_repo`;
     
     res.redirect(githubAuthUrl);
   });
