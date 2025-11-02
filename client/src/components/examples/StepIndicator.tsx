@@ -8,10 +8,6 @@ export default function StepIndicatorExample() {
         <StepIndicator currentStep="connect" />
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-4">Fork Step</p>
-        <StepIndicator currentStep="fork" />
-      </div>
-      <div>
         <p className="text-sm text-muted-foreground mb-4">Deploy Step</p>
         <StepIndicator currentStep="deploy" />
       </div>

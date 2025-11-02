@@ -23,15 +23,15 @@ export default function HeroSection({ onConnectGitHub, isLoading }: HeroSectionP
           <ul className="text-sm text-muted-foreground space-y-2 max-w-md mx-auto">
             <li className="flex items-center gap-2 justify-center">
               <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-              Free hosting on Render
+              Automatic GitHub fork
             </li>
             <li className="flex items-center gap-2 justify-center">
               <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-              Automatic repository fork
+              Free Render hosting
             </li>
             <li className="flex items-center gap-2 justify-center">
               <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-              One-click deployment
+              Deploy in 2 clicks
             </li>
           </ul>
         </div>

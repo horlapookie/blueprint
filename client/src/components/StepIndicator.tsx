@@ -1,6 +1,6 @@
 import { Check } from "lucide-react";
 
-type Step = "connect" | "fork" | "deploy" | "done";
+type Step = "connect" | "deploy" | "done";
 
 interface StepIndicatorProps {
   currentStep: Step;
@@ -8,9 +8,8 @@ interface StepIndicatorProps {
 
 const steps = [
   { id: "connect" as Step, label: "Connect", number: 1 },
-  { id: "fork" as Step, label: "Fork", number: 2 },
-  { id: "deploy" as Step, label: "Deploy", number: 3 },
-  { id: "done" as Step, label: "Done", number: 4 },
+  { id: "deploy" as Step, label: "Deploy", number: 2 },
+  { id: "done" as Step, label: "Done", number: 3 },
 ];
 
 export default function StepIndicator({ currentStep }: StepIndicatorProps) {
