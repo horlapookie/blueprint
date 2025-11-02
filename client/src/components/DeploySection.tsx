@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ExternalLink, Rocket } from "lucide-react";
+import DeploymentCarousel from "./DeploymentCarousel";
 
 interface DeploySectionProps {
   forkedRepoUrl: string;
@@ -22,7 +23,9 @@ export default function DeploySection({ forkedRepoUrl, username, onDeploy }: Dep
           Deploy your forked repository to Render with one click
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
+        <DeploymentCarousel />
+
         <div className="bg-muted p-4 rounded-lg space-y-2">
           <p className="text-sm font-medium">What happens next:</p>
           <ul className="text-sm text-muted-foreground space-y-1 ml-4">
