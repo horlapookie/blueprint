@@ -1,12 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Github } from "lucide-react";
 
-interface HeroSectionProps {
-  onConnectGitHub: () => void;
-  isLoading?: boolean;
-}
+export default function HeroSection() {
+  const handleLogin = () => {
+    window.location.href = '/api/auth/github';
+  };
 
-export default function HeroSection({ onConnectGitHub, isLoading }: HeroSectionProps) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-accent/10 px-6">
       <div className="max-w-2xl mx-auto text-center space-y-8">
@@ -15,7 +14,7 @@ export default function HeroSection({ onConnectGitHub, isLoading }: HeroSectionP
             Deploy Eclipse MD Bot
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed">
-            Launch your own WhatsApp bot instance in minutes. Fork the repository and deploy to Render with one click.
+            Launch your own WhatsApp bot instance in minutes. Authenticate with GitHub to automatically fork the repository, then deploy to Render.
           </p>
         </div>
 
@@ -39,13 +38,12 @@ export default function HeroSection({ onConnectGitHub, isLoading }: HeroSectionP
         <div className="pt-4">
           <Button
             size="lg"
-            onClick={onConnectGitHub}
-            disabled={isLoading}
+            onClick={handleLogin}
             className="min-h-14 px-8 text-base font-semibold"
-            data-testid="button-connect-github"
+            data-testid="button-login-github"
           >
             <Github className="w-5 h-5" />
-            {isLoading ? "Connecting..." : "Continue with GitHub"}
+            Login with GitHub
           </Button>
         </div>
 

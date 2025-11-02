@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import HeroSection from "@/components/HeroSection";
 import StepIndicator from "@/components/StepIndicator";
 import UserProfile from "@/components/UserProfile";
@@ -10,45 +12,73 @@ type Step = "connect" | "deploy" | "done";
 interface GitHubUser {
   username: string;
   avatarUrl: string;
+  forkedRepoUrl: string;
+}
+
+interface SessionResponse {
+  user: GitHubUser | null;
 }
 
 export default function Home() {
   const [currentStep, setCurrentStep] = useState<Step>("connect");
-  const [user, setUser] = useState<GitHubUser | null>(null);
-  const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // TODO: Remove mock functionality - Replace with actual GitHub OAuth + auto fork
-  const handleConnectGitHub = () => {
-    console.log("Connect with GitHub and auto-fork");
-    setIsConnecting(true);
-    setError(null);
-    
-    // Mock: GitHub OAuth + automatic fork
-    setTimeout(() => {
-      setUser({
-        username: "horlapookie",
-        avatarUrl: "https://github.com/horlapookie.png",
-      });
-      setIsConnecting(false);
+  // Check for error in URL params
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const errorParam = params.get('error');
+    if (errorParam) {
+      setError(`Authentication failed: ${errorParam.replace(/_/g, ' ')}`);
+      window.history.replaceState({}, '', '/');
+    }
+  }, []);
+
+  // Fetch current session
+  const { data: session, isLoading } = useQuery<SessionResponse>({
+    queryKey: ['/api/auth/session'],
+  });
+
+  const user = session?.user;
+
+  // Update step based on user state
+  useEffect(() => {
+    if (user) {
       setCurrentStep("deploy");
-    }, 2000);
-  };
+    } else {
+      setCurrentStep("connect");
+    }
+  }, [user]);
+
+  // Logout mutation
+  const logoutMutation = useMutation({
+    mutationFn: () => apiRequest('/api/auth/logout', 'POST'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/session'] });
+      setCurrentStep("connect");
+    },
+  });
 
   const handleLogout = () => {
-    console.log("Logout");
-    setUser(null);
-    setCurrentStep("connect");
-    setError(null);
+    logoutMutation.mutate();
   };
 
   const handleDeploy = () => {
-    console.log("Deploy to Render");
     setCurrentStep("done");
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (currentStep === "connect") {
-    return <HeroSection onConnectGitHub={handleConnectGitHub} isLoading={isConnecting} />;
+    return <HeroSection />;
   }
 
   return (
@@ -82,7 +112,7 @@ export default function Home() {
             />
             
             <DeploySection
-              forkedRepoUrl={`https://github.com/${user.username}/Horlapookie-bot`}
+              forkedRepoUrl={user.forkedRepoUrl}
               username={user.username}
               onDeploy={handleDeploy}
             />
