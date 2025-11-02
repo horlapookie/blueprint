@@ -7,13 +7,21 @@ const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 
 // Detect the correct base URL based on environment
 let BASE_URL = 'http://localhost:5000';
+
+// Check multiple Replit environment variables
 if (process.env.REPLIT_DEV_DOMAIN) {
-  // Replit workspace development URL
   BASE_URL = `https://${process.env.REPLIT_DEV_DOMAIN}`;
 } else if (process.env.REPL_SLUG && process.env.REPL_OWNER) {
-  // Standard Repl URL
   BASE_URL = `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`;
 }
+
+// Log the detected URL for debugging
+console.log('Detected BASE_URL:', BASE_URL);
+console.log('Available env vars:', {
+  REPLIT_DEV_DOMAIN: process.env.REPLIT_DEV_DOMAIN,
+  REPL_SLUG: process.env.REPL_SLUG,
+  REPL_OWNER: process.env.REPL_OWNER
+});
 
 // In-memory session store (replace with Redis/DB for production)
 const sessions = new Map<string, {
